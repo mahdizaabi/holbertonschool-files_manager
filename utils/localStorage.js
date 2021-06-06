@@ -26,4 +26,4 @@ const localStorage = (data) => {
   });
   return (storagePath);
 };
-export default localStorage;git a
+export default localStorage;
