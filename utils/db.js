@@ -4,7 +4,6 @@ const { ObjectID } = require('mongodb');
 
 class DBClient {
   constructor() {
-    this.status = false;
     this.host = process.env.DB_HOST || 'localhost';
     this.port = process.env.DB_PORT || 27017;
     this.DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
@@ -18,8 +17,10 @@ class DBClient {
     client.connect((err) => {
       if (!err) {
         this.status = true;
+        this.db = client.db(this.DB_DATABASE);
+      } else {
+        this.status = false;
       }
-      this.db = client.db(this.DB_DATABASE);
     });
   }
 
