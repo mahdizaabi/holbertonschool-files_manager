@@ -8,7 +8,7 @@ class AppController {
 
   static async getStats(req, res) {
     const nbUser = await DBClient.nbUsers();
-    const nbFiles = await DBClient.nbUsers();
+    const nbFiles = await DBClient.nbFiles();
 
     res.status(200).send({ users: nbUser, files: nbFiles });
   }
