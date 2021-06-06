@@ -5,7 +5,6 @@ const acceptedType = ['file', 'folder', 'image'];
 class FileModel {
   static async checkParentId(parentId) {
     const file = await DBClient.getparentIdFile(parentId);
-    
     return file;
   }
 
@@ -63,16 +62,6 @@ class FileModel {
   }
 
   set parentId(parentId) {
-    const file = FileModel.checkParentId(parentId);
-    if (parentId) {
-      if (!file) {
-        throw new Error('Parent not found');
-      }
-      if (file && file.type !== 'folder') {
-        throw new Error('Parent is not a folder');
-      }
-    }
-
     this._parentId = parentId;
   }
 
