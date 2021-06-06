@@ -3,9 +3,7 @@ import RedisClient from '../utils/redis';
 
 class AppController {
   static getStatus(req, res) {
-    if (DBClient.isAlive && RedisClient) {
-      res.status(200).send({ redis: true, db: true });
-    }
+    res.status(200).send({ redis: RedisClient.isAlive, db: DBClient.isAlive });
   }
 
   static async getStats(req, res) {
