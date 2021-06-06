@@ -19,8 +19,9 @@ class UsersController {
       res.status(400).send({ error: 'Already exist' });
       return;
     }
-    const { id } = await DBClient.setNewUser({ email, password: hashPswd(password) });
-    res.status(200).send(id);
+    const { ops } = await DBClient.setNewUser({ email, password: hashPswd(password) });
+    const { _id } = ops[0];
+    res.status(200).send(JSON.stringify({ id: _id, email }));
   }
 
   static async getMe(req, res) {
