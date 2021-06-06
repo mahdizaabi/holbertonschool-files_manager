@@ -58,6 +58,14 @@ class DBClient {
   async saveNewFileToDataBase(newFile) {
     return this.db.collection('files').insertOne(newFile);
   }
+
+  async getFile(fileId, userId) {
+    return this.db.collection('files').find({ _id: ObjectID(fileId), userId: ObjectID(userId) });
+  }
+
+  async getAllFilesBasedParentId(userId, parentId) {
+    return this.db.collection('files').find({ userId, parentId });
+  }
 }
 
 export default new DBClient();

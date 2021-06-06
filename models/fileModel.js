@@ -78,7 +78,7 @@ class FileModel {
 
   async addOneToDatabase(localPath) {
     let newEntity;
-    if (this.type !== 'folder') {
+    if (this.type !== 'folder' && this.parentId === 0) {
       newEntity = await DBClient.saveNewFileToDataBase({
         userId: this.userId,
         name: this.name,

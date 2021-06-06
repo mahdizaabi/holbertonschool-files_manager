@@ -2,13 +2,12 @@ import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
+import paginateResults from '../utils/pagination';
 
 class FilesController {
   static async postUpload(req, res) {
     /* hecking Authentication */
     const { type, parentId } = req.body;
-    console.log(parentId);
-    console.log(type);
 
     const token = req.headers['x-token'];
     const userId = await Auth.getUserByToken(token);
@@ -18,7 +17,7 @@ class FilesController {
     }
     /* End checking authentiction */
 
-    const user = DBClient.getUserById(userId);
+    const user = await DBClient.getUserById(userId);
     if (!user) {
       res.status(401).send({ error: 'Unauthorized' });
       return;
@@ -65,6 +64,59 @@ class FilesController {
     delete newfile._id;
 
     res.status(201).send(JSON.stringify({ ...newfile, id: _id }));
+  }
+
+  static async getShow(req, res) {
+    /* hecking Authentication (to be replaces with middleware afterwards) */
+    const token = req.headers['x-token'];
+    const userId = await Auth.getUserByToken(token);
+    if (!userId) {
+      res.status(401).send({ error: 'Unauthorized' });
+      return;
+    }
+    /* End checking authentiction */
+    const user = await DBClient.getUserById(userId);
+    if (!user) {
+      res.status(401).send({ error: 'Unauthorized' });
+      return;
+    }
+    const { id } = req.params;
+    const file = await DBClient.getFile(id, userId);
+    if (!file) {
+      res.status(404).send('Not found');
+    }
+    res.status(201).send(JSON.stringify(file));
+  }
+
+  static async getIndex(req, res) {
+    /*  parse Query parameters(URL string) and Get parentId */
+    let { parentId } = req.query;
+    const { page } = req.query;
+    /* no-unused-expressions */
+    if (parentId === 'undefined') {
+      parentId = 0;
+    }
+    /* START AUTHENTICATION    */
+    const token = req.headers['x-token'];
+    const userId = await Auth.getUserByToken(token);
+    if (!userId) {
+      res.status(401).send({ error: 'Unauthorized' });
+      return;
+    }
+    /* End checking authentiction */
+    const user = await DBClient.getUserById(userId);
+    if (!user) {
+      res.status(401).send({ error: 'Unauthorized' });
+      return;
+    }
+    /*  get all files for the authenticated user  */
+    const allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
+    if (allFiles.count() === 0) {
+      res.status(201).send(JSON.stringify([]));
+      return;
+    }
+
+    await paginateResults(allFiles, page, res);
   }
 }
 
