@@ -35,11 +35,10 @@ class UsersController {
     const userId = await Auth.getUserByToken(token);
 
     if (!userId) {
-      res.status(401).send({ error: 'Unauthorized' });
-      return;
+      return res.status(401).json({ error: 'Unauthorized' });
     }
     const { _id, email } = await DBClient.getUserById(userId);
-    res.status(200).send({ _id, email });
+    return res.status(200).json({ _id, email });
   }
 }
 export default UsersController;
