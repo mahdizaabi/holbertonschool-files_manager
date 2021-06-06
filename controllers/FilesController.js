@@ -7,6 +7,9 @@ class FilesController {
   static async postUpload(req, res) {
     /* hecking Authentication */
     const { type, parentId } = req.body;
+    console.log(parentId);
+    console.log(type);
+
     const token = req.headers['x-token'];
     const userId = await Auth.getUserByToken(token);
     if (!userId) {
@@ -33,7 +36,6 @@ class FilesController {
           throw new Error('Parent not found');
         }
         if (fileToCheck && fileToCheck.type !== 'folder') {
-          console.log(fileToCheck);
           throw new Error('Parent is not a folder');
         }
       } catch (e) {
@@ -53,14 +55,16 @@ class FilesController {
 
     /*  Save data locally */
     let localPath;
-    if (type !== 'folder' && !parentId) {
+    if (type !== 'folder' && parentId === 0) {
       localPath = localStorage(req.body.data);
     }
 
     /* -save to database */
     const newfile = await fileModelInstance.addOneToDatabase(localPath);
-    
-    res.status(201).send(JSON.stringify(newfile));
+    const { _id } = newfile;
+    delete newfile._id;
+
+    res.status(201).send(JSON.stringify({ ...newfile, id: _id }));
   }
 }
 
