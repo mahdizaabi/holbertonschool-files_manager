@@ -4,10 +4,10 @@ const { ObjectID } = require('mongodb');
 
 class DBClient {
   constructor() {
-    this.host = process.env.DB_HOST || 'localhost';
-    this.port = process.env.DB_PORT || 27017;
-    this.DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
-    const uri = `mongodb://${this.host}:${this.port}`;
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || 27017;
+    const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
+    const uri = `mongodb://${host}:${port}`;
 
     const client = new MongoClient(uri, {
       useNewUrlParser: true,
@@ -17,7 +17,7 @@ class DBClient {
     client.connect((err) => {
       if (!err) {
         this.status = true;
-        this.db = client.db(this.DB_DATABASE);
+        this.db = client.db(DB_DATABASE);
       } else {
         this.status = false;
       }
@@ -37,19 +37,19 @@ class DBClient {
   }
 
   async checkEmail(email) {
-    this.db.collection('users').findOne({ email });
+    return this.db.collection('users').findOne({ email });
   }
 
   async setNewUser(newUser) {
-    this.db.collection('users').insertOne(newUser);
+    return this.db.collection('users').insertOne(newUser);
   }
 
   async getUserFromEmail(email) {
-    this.db.collection('users').findOne({ email });
+    return this.db.collection('users').findOne({ email });
   }
 
   async getUserById(userId) {
-    this.db.collection('users').findOne({ _id: ObjectID(userId) });
+    return this.db.collection('users').findOne({ _id: ObjectID(userId) });
   }
 
   async getparentIdFile(parentId) {
