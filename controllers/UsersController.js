@@ -24,9 +24,8 @@ class UsersController {
     }
 
     try {
-      const { ops } = await DBClient.setNewUser({ email, password: sha1(password) });
-      const { _id } = ops[0];
-      res.status(201).send(JSON.stringify({ id: _id, email }));
+      const ops = await DBClient.setNewUser({ email, password: sha1(password) });
+      res.status(201).send(JSON.stringify({ id: ops.insertedId, email }));
       return;
     } catch (err) {
       res.status(500).send({ error: 'internal Error' });
