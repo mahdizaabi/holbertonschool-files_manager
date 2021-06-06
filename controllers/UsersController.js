@@ -21,7 +21,7 @@ class UsersController {
     }
     const { ops } = await DBClient.setNewUser({ email, password: hashPswd(password) });
     const { _id } = ops[0];
-    res.status(200).send(JSON.stringify({ id: _id, email }));
+    res.status(201).send(JSON.stringify({ id: _id, email }));
   }
 
   static async getMe(req, res) {
