@@ -53,12 +53,13 @@ class FilesController {
 
     /*  Save data locally */
     let localPath;
-    if (type !== 'folder') {
+    if (type !== 'folder' && !parentId) {
       localPath = localStorage(req.body.data);
     }
 
     /* -save to database */
     const newfile = await fileModelInstance.addOneToDatabase(localPath);
+    
     res.status(201).send(JSON.stringify(newfile));
   }
 }
