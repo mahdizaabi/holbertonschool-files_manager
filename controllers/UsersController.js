@@ -26,7 +26,6 @@ class UsersController {
   static async getMe(req, res) {
     const token = req.headers['x-token'];
     const userId = await Auth.getUserByToken(token);
-    console.log(userId);
 
     if (!userId) {
       res.status(401).send({ error: 'Unauthorized' });

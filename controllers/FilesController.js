@@ -6,8 +6,7 @@ import localStorage from '../utils/localStorage';
 class FilesController {
   static async postUpload(req, res) {
     /* hecking Authentication */
-    const { type } = req.body;
-    console.log(req.body)
+    const { type, parentId } = req.body;
     const token = req.headers['x-token'];
     const userId = await Auth.getUserByToken(token);
     if (!userId) {
@@ -22,6 +21,27 @@ class FilesController {
       return;
     }
 
+    /* check if parentId is a file with type=folder and exist
+        {decoupled from the FILEMODEL class for asynchronosity isssues} */
+    /* it was impossible to check this condition asynchornously
+        because the setter can't wait for the asynchronous checking-operation */
+    let fileToCheck;
+    if (parentId) {
+      try {
+        fileToCheck = await FileModel.checkParentId(parentId);
+        if (!fileToCheck) {
+          throw new Error('Parent not found');
+        }
+        if (fileToCheck && fileToCheck.type !== 'folder') {
+          console.log(fileToCheck);
+          throw new Error('Parent is not a folder');
+        }
+      } catch (e) {
+        res.status(400).send({ error: e.message });
+        return;
+      }
+    }
+    /* END of asynchronous checking operation   */
     /*  create fileSchema from model   */
     let fileModelInstance;
     try {
