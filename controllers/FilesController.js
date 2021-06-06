@@ -58,7 +58,7 @@ class FilesController {
       localPath = localStorage(req.body.data);
     }
 
-    /* -save to database */
+    /* -save to databas */
     const newfile = await fileModelInstance.addOneToDatabase(localPath);
     const { _id } = newfile;
     delete newfile._id;

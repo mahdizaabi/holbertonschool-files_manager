@@ -13,12 +13,16 @@ class UsersController {
       res.status(400).send({ error: 'Missing password' });
       return;
     }
-
-    const checkedEmail = await DBClient.checkEmail(email);
-    if (checkedEmail) {
+    try {
+      const checkedEmail = await DBClient.checkEmail(email);
+      if (checkedEmail) {
+        res.status(400).send({ error: 'Already exist' });
+        return;
+      }
+    } catch (e) {
       res.status(400).send({ error: 'Already exist' });
-      return;
     }
+
     try {
       const { ops } = await DBClient.setNewUser({ email, password: sha1(password) });
       const { _id } = ops[0];
