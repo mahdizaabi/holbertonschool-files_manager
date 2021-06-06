@@ -1,5 +1,5 @@
+import sha1 from 'sha1';
 import DBClient from '../utils/db';
-import hashPswd from '../utils/passEncryption';
 import Auth from '../utils/Auth';
 
 class UsersController {
@@ -19,9 +19,14 @@ class UsersController {
       res.status(400).send({ error: 'Already exist' });
       return;
     }
-    const { ops } = await DBClient.setNewUser({ email, password: hashPswd(password) });
-    const { _id } = ops[0];
-    res.status(201).send(JSON.stringify({ id: _id, email }));
+    try {
+      const { ops } = await DBClient.setNewUser({ email, password: sha1(password) });
+      const { _id } = ops[0];
+      res.status(201).send(JSON.stringify({ id: _id, email }));
+      return;
+    } catch (err) {
+      res.status(500).send({ error: 'internal Error' });
+    }
   }
 
   static async getMe(req, res) {

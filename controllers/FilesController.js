@@ -110,7 +110,6 @@ class FilesController {
     }
     /*  get all files for the authenticated user  */
     const allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
-    console.log(await allFiles.count());
 
     if (await allFiles.count() === 0) {
       res.status(201).send(JSON.stringify([]));
