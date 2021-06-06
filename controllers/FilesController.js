@@ -46,7 +46,7 @@ class FilesController {
     /*  create fileSchema from model   */
     let fileModelInstance;
     try {
-      fileModelInstance = new FileModel({ ...req.body, userId });
+      fileModelInstance = new FileModel({ ...req.body, userId, parentId });
     } catch (e) {
       res.status(400).send({ error: e.message });
       return;
@@ -62,7 +62,6 @@ class FilesController {
     const newfile = await fileModelInstance.addOneToDatabase(localPath);
     const { _id } = newfile;
     delete newfile._id;
-
     res.status(201).send(JSON.stringify({ ...newfile, id: _id }));
   }
 
@@ -93,7 +92,7 @@ class FilesController {
     let { parentId } = req.query;
     const { page } = req.query;
     /* no-unused-expressions */
-    if (parentId === 'undefined') {
+    if (typeof parentId === 'undefined') {
       parentId = 0;
     }
     /* START AUTHENTICATION    */
@@ -111,12 +110,14 @@ class FilesController {
     }
     /*  get all files for the authenticated user  */
     const allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
-    if (allFiles.count() === 0) {
+    console.log(await allFiles.count());
+
+    if (await allFiles.count() === 0) {
       res.status(201).send(JSON.stringify([]));
       return;
     }
 
-    await paginateResults(allFiles, page, res);
+    paginateResults(allFiles, page, res);
   }
 }
 
