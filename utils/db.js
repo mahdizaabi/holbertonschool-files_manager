@@ -37,19 +37,19 @@ class DBClient {
   }
 
   async checkEmail(email) {
-    return this.db.collection('users').findOne({ email });
+    this.db.collection('users').findOne({ email });
   }
 
   async setNewUser(newUser) {
-    return this.db.collection('users').insertOne(newUser);
+    this.db.collection('users').insertOne(newUser);
   }
 
   async getUserFromEmail(email) {
-    return this.db.collection('users').findOne({ email });
+    this.db.collection('users').findOne({ email });
   }
 
   async getUserById(userId) {
-    return this.db.collection('users').findOne({ _id: ObjectID(userId) });
+    this.db.collection('users').findOne({ _id: ObjectID(userId) });
   }
 
   async getparentIdFile(parentId) {
