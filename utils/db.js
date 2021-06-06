@@ -36,11 +36,11 @@ class DBClient {
   }
 
   async checkEmail(email) {
-    this.db.collection('users').findOne({ email });
+    return this.db.collection('users').findOne({ email });
   }
 
   async setNewUser(newUser) {
-    this.db.collection('users').insertOne(newUser);
+    return this.db.collection('users').insertOne(newUser);
   }
 
   async getUserFromEmail(email) {
