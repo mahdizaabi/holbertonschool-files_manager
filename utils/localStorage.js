@@ -19,7 +19,7 @@ const localStorage = (data) => {
     if (err) {
       return ({ error: err });
     }
-    return ({ success: 'success' });
+    return ({ s: 's' });
   });
   return (storagePath);
 };
