@@ -19,8 +19,6 @@ class AuthController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const { email, pass } = Auth.getAuthorizationHeader(authorization);
-    console.log(email);
-    console.log(pass);
     if (!email || !pass) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -32,15 +30,18 @@ class AuthController {
     return res.status(200).json(token);
   }
 
-  static async disconnect(req, res) {
+  static async getDisconnect(req, res) {
     const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
     const userRedisKey = `auth_${token}`;
     const userId = await Auth.getUserByToken(token);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     redisClient.del(userRedisKey);
-    return res.status(201).end();
+    return res.status(204).end();
   }
 }
 
