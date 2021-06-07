@@ -2,7 +2,6 @@ import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
-import paginateResults from '../utils/pagination';
 
 class FilesController {
   static async postUpload(req, res) {
@@ -91,6 +90,7 @@ class FilesController {
     /*  parse Query parameters(URL string) and Get parentId */
     let { parentId } = req.query;
     const { page } = req.query;
+    console.log(page);
     /* no-unused-expressions */
     if (typeof parentId === 'undefined') {
       parentId = 0;
@@ -112,8 +112,18 @@ class FilesController {
     if (await allFiles.count() === 0) {
       return res.status(201).json([]);
     }
+    const contentPerPage = 20;
+    const dataList = [];
 
-    return paginateResults(allFiles, page, res);
+    const cursor = await allFiles.sort()
+      .skip(page > 0 ? ((page + 1) * contentPerPage) : 0)
+      .limit(contentPerPage);
+    await cursor.forEach((document) => {
+      console.log(document);
+
+      dataList.push(document);
+    });
+    return res.status(201).json(dataList);
   }
 }
 
