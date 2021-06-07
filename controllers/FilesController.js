@@ -56,7 +56,7 @@ class FilesController {
 
     /*  Save data locally */
     let localPath;
-    if (type !== 'folder' && parentId === 0) {
+    if (type !== 'folder') {
       localPath = localStorage(req.body.data);
     }
 
