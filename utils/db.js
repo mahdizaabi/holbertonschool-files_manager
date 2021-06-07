@@ -8,6 +8,7 @@ class DBClient {
     const port = process.env.DB_PORT || 27017;
     const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
     const uri = `mongodb://${host}:${port}`;
+    this.status = false;
 
     const client = new MongoClient(uri, {
       useNewUrlParser: true,
