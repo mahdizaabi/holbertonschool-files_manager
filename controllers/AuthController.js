@@ -14,6 +14,7 @@ class AuthController {
    * @return {Object} http response
    */
     const { authorization } = req.headers;
+    if (!authorization) return res.status(401).json({ error: 'Unauthorized' });
 
     if (!Auth.checkAuthorizationHeader(authorization)) {
       return res.status(401).json({ error: 'Unauthorized' });
