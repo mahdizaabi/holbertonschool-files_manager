@@ -9,7 +9,7 @@ class FileModel {
   }
 
   constructor({
-    userId, name, type, isPublic, data, parentId
+    userId, name, type, isPublic, data, parentId,
   }) {
     this.userId = userId;
     this.name = name;
