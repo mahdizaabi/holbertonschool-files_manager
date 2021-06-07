@@ -32,13 +32,18 @@ class UsersController {
 
   static async getMe(req, res) {
     const token = req.headers['x-token'];
-    const userId = await Auth.getUserByToken(token);
-
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    let userId;
+    try {
+      userId = await Auth.getUserByToken(token);
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+    } catch (e) {
+      return res.status(401).json({ error: e.message });
     }
+
     const { _id, email } = await DBClient.getUserById(userId);
-    return res.status(200).json({ _id, email });
+    return res.status(200).json({ id: _id, email });
   }
 }
 export default UsersController;
