@@ -135,6 +135,8 @@ class FilesController {
 
   static async putPublish(req, res) {
     const { id } = req.params;
+    const { userId } = req;
+
     let document;
     const update = {
       $set: {
@@ -147,12 +149,12 @@ class FilesController {
     } catch (e) {
       return res.status(404).json({ error: e.message });
     }
-    const query = { _id: docId };
+    const query = { _id: docId, userId };
     try {
       document = await DBClient.ccc(query, update, { returnOriginal: false });
       if (!document.value) throw new Error('Not found');
     } catch (e) {
-      return res.status(404).json({ error: e.message });
+      return res.status(404).json({ error: 'Not found' });
     }
     return res.status(200).json(document.value);
   }
@@ -170,7 +172,7 @@ class FilesController {
     try {
       docId = ObjectID(id);
     } catch (e) {
-      return res.status(404).json({ error: e.message });
+      return res.status(404).json({ error: 'Not found' });
     }
     const query = { _id: docId, userId };
     try {
