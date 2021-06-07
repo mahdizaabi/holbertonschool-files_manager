@@ -85,7 +85,6 @@ class FilesController {
     /*  parse Query parameters(URL string) and Get parentId */
     let { parentId } = req.query;
     const { page } = req.query;
-    console.log(page);
     /* no-unused-expressions */
     if (typeof parentId === 'undefined') {
       parentId = 0;
@@ -102,7 +101,12 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     /*  get all files for the authenticated user  */
-    const allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
+    let allFiles;
+    try {
+      allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
+    } catch (e) {
+      return res.status(201).json([]);
+    }
 
     if (await allFiles.count() === 0) {
       return res.status(201).json([]);
@@ -114,11 +118,17 @@ class FilesController {
       .skip(page > 0 ? ((page + 1) * contentPerPage) : 0)
       .limit(contentPerPage);
     await cursor.forEach((document) => {
-      console.log(document);
-
       dataList.push(document);
     });
-    return res.status(201).json(dataList);
+    const responseL = dataList.map((file) => ({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    }));
+    return res.status(201).json(responseL);
   }
 }
 
