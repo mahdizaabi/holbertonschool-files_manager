@@ -1,6 +1,5 @@
 import sha1 from 'sha1';
 import DBClient from '../utils/db';
-import Auth from '../utils/Auth';
 
 class UsersController {
   static async postNew(req, res) {
@@ -31,18 +30,7 @@ class UsersController {
   }
 
   static async getMe(req, res) {
-    const token = req.headers['x-token'];
-    let userId;
-    try {
-      userId = await Auth.getUserByToken(token);
-      if (!userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-    } catch (e) {
-      return res.status(401).json({ error: e.message });
-    }
-
-    const { _id, email } = await DBClient.getUserById(userId);
+    const { _id, email } = await DBClient.getUserById(req.userId);
     return res.status(200).json({ id: _id, email });
   }
 }

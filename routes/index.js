@@ -3,6 +3,7 @@ import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
+import auth from '../middleware/auth';
 
 const router = express.Router();
 /*  Views */
@@ -12,7 +13,7 @@ router.post('/users', UsersController.postNew);
 
 router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.getDisconnect);
-router.get('/users/me', UsersController.getMe);
+router.get('/users/me', auth, UsersController.getMe);
 
 router.post('/files', FilesController.postUpload);
 
