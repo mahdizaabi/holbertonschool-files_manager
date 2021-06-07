@@ -67,21 +67,16 @@ class FilesController {
   }
 
   static async getShow(req, res) {
-    /* hecking Authentication (to be replaces with middleware afterwards) */
-    const token = req.headers['x-token'];
-    const userId = await Auth.getUserByToken(token);
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    /* End checking authentiction */
-    const user = await DBClient.getUserById(userId);
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const { userId } = req;
     const { id } = req.params;
-    const file = await DBClient.getFile(id, userId);
+    let file;
+    try {
+      file = await DBClient.getFile(id, userId);
+    } catch (e) {
+      return res.status(404).json({ error: 'Not found' });
+    }
     if (!file) {
-      return res.status(404).json('Not found');
+      return res.status(404).json({ error: 'Not found' });
     }
     return res.status(201).json(file);
   }

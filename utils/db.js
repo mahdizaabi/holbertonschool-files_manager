@@ -61,7 +61,7 @@ class DBClient {
   }
 
   async getFile(fileId, userId) {
-    return this.db.collection('files').find({ _id: ObjectID(fileId), userId: ObjectID(userId) });
+    return this.db.collection('files').findOne({ _id: ObjectID(fileId), userId });
   }
 
   async getAllFilesBasedParentId(userId, parentId) {
