@@ -23,11 +23,12 @@ class AuthController {
     if (!email || !pass) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const { password, _id } = await DBClient.getUserFromEmail(email);
-    if (password !== sha1(pass) || !password) {
+    const user = await DBClient.getUserFromEmail(email);
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+    if (user.password !== sha1(pass) || !user.password) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const token = Auth.generateID(_id);
+    const token = Auth.generateID(user._id);
     return res.status(200).json(token);
   }
 
