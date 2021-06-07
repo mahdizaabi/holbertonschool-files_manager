@@ -12,6 +12,7 @@ const auth = async (req, res, next) => {
     return res.status(401).json({ error: e.message });
   }
   req.userId = userId;
+  req.token = token;
   return next();
 };
 
