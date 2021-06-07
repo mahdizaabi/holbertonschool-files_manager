@@ -9,7 +9,7 @@ class FilesController {
     /* hecking Authentication */
     const { type } = req.body;
     let { parentId } = req.body;
-    if (parentId) {
+    if (!parentId) {
       parentId = 0;
     }
     const token = req.headers['x-token'];
