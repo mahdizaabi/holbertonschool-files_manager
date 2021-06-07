@@ -15,7 +15,7 @@ class Auth {
 
   static generateID(userId) {
     const token = uuidv4();
-    redisClient.set(`auth_${token}`, userId, 86400);
+    redisClient.set(`auth_${token}`, userId.toString(), 86400);
     return ({ token });
   }
 
@@ -25,7 +25,7 @@ class Auth {
       const userId = await redisClient.get(userRedisKey);
       return (userId);
     } catch (e) {
-      return null;
+      return e;
     }
   }
 }
