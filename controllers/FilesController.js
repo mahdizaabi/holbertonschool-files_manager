@@ -3,6 +3,8 @@ import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
 
+const { ObjectID } = require('mongodb');
+
 class FilesController {
   static async postUpload(req, res) {
     /* hecking Authentication */
@@ -129,6 +131,55 @@ class FilesController {
       parentId: file.parentId,
     }));
     return res.status(201).json(responseL);
+  }
+
+  static async putPublish(req, res) {
+    const { id } = req.params;
+    let document;
+    const update = {
+      $set: {
+        isPublic: true,
+      },
+    };
+    let docId;
+    try {
+      docId = ObjectID(id);
+    } catch (e) {
+      return res.status(404).json({ error: e.message });
+    }
+    const query = { _id: docId };
+    try {
+      document = await DBClient.ccc(query, update, { returnOriginal: false });
+      if (!document.value) throw new Error('Not found');
+    } catch (e) {
+      return res.status(404).json({ error: e.message });
+    }
+    return res.status(200).json(document.value);
+  }
+
+  static async putUnpublish(req, res) {
+    const { id } = req.params;
+    const { userId } = req;
+    let document;
+    const update = {
+      $set: {
+        isPublic: false,
+      },
+    };
+    let docId;
+    try {
+      docId = ObjectID(id);
+    } catch (e) {
+      return res.status(404).json({ error: e.message });
+    }
+    const query = { _id: docId, userId };
+    try {
+      document = await DBClient.ccc(query, update, { returnOriginal: false });
+      if (!document.value) throw new Error('Not found');
+    } catch (e) {
+      return res.status(404).json({ error: e.message });
+    }
+    return res.status(200).json(document.value);
   }
 }
 

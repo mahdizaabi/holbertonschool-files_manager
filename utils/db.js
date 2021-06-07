@@ -65,6 +65,14 @@ class DBClient {
     return this.db.collection('files').findOne({ _id: ObjectID(fileId), userId });
   }
 
+  async getDocumentById(documentId) {
+    return this.db.collection('files').findOne({ _id: ObjectID(documentId) });
+  }
+
+  async ccc(query, update, option) {
+    return this.db.collection('files').findOneAndUpdate(query, update, option);
+  }
+
   async getAllFilesBasedParentId(parentId) {
     return this.db.collection('files').find({ parentId });
   }
