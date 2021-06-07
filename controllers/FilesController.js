@@ -100,10 +100,10 @@ class FilesController {
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    /*  get all files for the authenticated use  */
+    /*  get all files for the authenticated user  */
     let allFiles;
     try {
-      allFiles = await DBClient.getAllFilesBasedParentId(userId, parentId);
+      allFiles = await DBClient.getAllFilesBasedParentId(parentId);
     } catch (e) {
       return res.status(201).json([]);
     }
@@ -112,11 +112,14 @@ class FilesController {
       return res.status(201).json([]);
     }
     const contentPerPage = 20;
-    const dataList = await DBClient.db.collection('files').aggregate([
-      { $match: { parentId } },
-      { $skip: page * contentPerPage },
-      { $limit: contentPerPage },
-    ]).toArray();
+    const dataList = [];
+
+    const cursor = await allFiles.sort()
+      .skip(page > 0 ? ((page + 1) * contentPerPage) : 0)
+      .limit(contentPerPage);
+    await cursor.forEach((document) => {
+      dataList.push(document);
+    });
     const responseL = dataList.map((file) => ({
       id: file._id,
       userId: file.userId,
