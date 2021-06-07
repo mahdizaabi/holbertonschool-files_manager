@@ -7,8 +7,11 @@ import paginateResults from '../utils/pagination';
 class FilesController {
   static async postUpload(req, res) {
     /* hecking Authentication */
-    const { type, parentId } = req.body;
-
+    const { type } = req.body;
+    let { parentId } = req.body;
+    if (parentId) {
+      parentId = 0;
+    }
     const token = req.headers['x-token'];
     const userId = await Auth.getUserByToken(token);
     if (!userId) {
@@ -26,7 +29,7 @@ class FilesController {
     /* it was impossible to check this condition asynchornously
         because the setter can't wait for the asynchronous checking-operation */
     let fileToCheck;
-    if (parentId) {
+    if (parentId && parentId !== 0) {
       try {
         fileToCheck = await FileModel.checkParentId(parentId);
         if (!fileToCheck) {
@@ -50,7 +53,7 @@ class FilesController {
 
     /*  Save data locally */
     let localPath;
-    if (type !== 'folder' && parentId === 0) {
+    if (type !== 'folder') {
       localPath = localStorage(req.body.data);
     }
 
