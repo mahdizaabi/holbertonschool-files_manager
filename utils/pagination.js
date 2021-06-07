@@ -10,6 +10,6 @@ const paginateResults = async (allFiles, page = 0, res) => {
     dataList.push(document);
   });
 
-  res.status(201).send(JSON.stringify(dataList));
+  return res.status(201).json(dataList);
 };
 export default paginateResults;
