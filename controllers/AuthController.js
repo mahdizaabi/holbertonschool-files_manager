@@ -1,6 +1,6 @@
+import sha1 from 'sha1';
 import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
-import hashPswd from '../utils/passEncryption';
 import redisClient from '../utils/redis';
 
 class AuthController {
@@ -19,11 +19,13 @@ class AuthController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const { email, pass } = Auth.getAuthorizationHeader(authorization);
+    console.log(email);
+    console.log(pass);
     if (!email || !pass) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const { password, _id } = await DBClient.getUserFromEmail(email);
-    if (password.toString('hex') !== hashPswd(pass).toString('hex') || !password) {
+    if (password !== sha1(pass) || !password) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const token = Auth.generateID(_id);
