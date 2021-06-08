@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-named-as-default
 import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
