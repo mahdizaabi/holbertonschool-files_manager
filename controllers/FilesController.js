@@ -10,26 +10,10 @@ const { ObjectID } = require('mongodb');
 
 class FilesController {
   static async postUpload(req, res) {
-    /* hecking Authentication */
-
-    const token = req.headers['x-token'];
-    if (!token) return res.status(401).json({ error: 'Unauthorized' });
-
-    let userId;
-    try {
-      userId = await Auth.getUserByToken(token);
-      if (!userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-    } catch (e) {
-      return res.status(401).json({ error: e.message });
-    }
-    /* End checking authentiction */
+    const { userId } = req;
     const { type } = req.body;
     let { parentId } = req.body;
-    if (!parentId) {
-      parentId = 0;
-    }
+    if (!parentId) parentId = 0;
 
     /* check if parentId is a file with type=folder and exist
         {decoupled from the FILEMODEL class for asynchronosity isssues} */
