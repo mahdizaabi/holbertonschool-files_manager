@@ -54,7 +54,7 @@ class DBClient {
   }
 
   async getparentIdFile(parentId) {
-    return this.db.collection('files').findOne({ _id: parentId });
+    return this.db.collection('files').findOne({ _id: ObjectID(parentId) });
   }
 
   async saveNewFileToDataBase(newFile) {
@@ -62,7 +62,7 @@ class DBClient {
   }
 
   async getFile(fileId, userId) {
-    return this.db.collection('files').findOne({ _id: ObjectID(fileId), userId: ObjectID(userId) });
+    return this.db.collection('files').findOne({ _id: ObjectID(fileId), userId });
   }
 
   async getDocumentById(documentId) {
@@ -74,8 +74,7 @@ class DBClient {
   }
 
   async getAllFilesBasedParentId(parentId) {
-    const pId = parentId === 0 ? 0 : ObjectID(parentId);
-    return this.db.collection('files').find({ parentId: pId });
+    return this.db.collection('files').find({ parentId });
   }
 }
 
