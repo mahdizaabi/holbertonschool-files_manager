@@ -99,6 +99,11 @@ class FileModel {
 
     return newEntity.ops[0];
   }
+
+  static async isLinkedToUser(docId, userId) {
+    const doc = await DBClient.getFile(docId, userId);
+    return doc;
+  }
 }
 
 export default FileModel;

@@ -2,7 +2,9 @@ import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
-import { formatResponseOutput } from '../utils/helper';
+import { checkMimeType, checkPathExist, formatResponseOutput } from '../utils/helper';
+
+const fs = require('fs');
 
 const { ObjectID } = require('mongodb');
 
@@ -183,6 +185,29 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
     return res.status(200).json(formatResponseOutput(document.value));
+  }
+
+  static async getFile(req, res) {
+    const { id } = req.params;
+    const { userId } = req;
+    let document;
+
+    try {
+      document = await FileModel.isLinkedToUser(id, userId);
+      if (!document) throw new Error('Not found');
+      if (!document.isPublic) throw new Error('Not found');
+      if (!checkPathExist(document.localPath)) throw new Error('Not found');
+    } catch (e) {
+      return res.status(404).json({ error: e.message });
+    }
+    if (document.type === 'folder') return res.status(404).json({ error: "A folder doesn't have content" });
+    const type = checkMimeType(document.name);
+    const data = fs.readFileSync(document.localPath, 'utf8');
+    return res.format({
+      [type]() {
+        res.status(200).send(data);
+      },
+    });
   }
 }
 
