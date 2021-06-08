@@ -1,5 +1,7 @@
 import DBClient from '../utils/db';
 
+const { ObjectID } = require('mongodb');
+
 const acceptedType = ['file', 'folder', 'image'];
 
 class FileModel {
@@ -40,7 +42,7 @@ class FileModel {
   }
 
   set userId(userId) {
-    this._userId = userId;
+    this._userId = ObjectID(userId);
   }
 
   set name(name) {
@@ -62,7 +64,11 @@ class FileModel {
   }
 
   set parentId(parentId) {
-    this._parentId = parentId;
+    if (parentId !== 0) {
+      this._parentId = ObjectID(parentId);
+    } else {
+      this._parentId = 0;
+    }
   }
 
   get data() {
