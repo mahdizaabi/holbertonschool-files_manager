@@ -54,9 +54,7 @@ class DBClient {
   }
 
   async getparentIdFile(parentId) {
-    const pId = parentId === 0 ? 0 : ObjectID(parentId);
-
-    return this.db.collection('files').findOne({ parentId: pId });
+    return this.db.collection('files').findOne({ _id: parentId });
   }
 
   async saveNewFileToDataBase(newFile) {
