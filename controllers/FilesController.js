@@ -150,7 +150,7 @@ class FilesController {
     } catch (e) {
       return res.status(404).json({ error: 'Not found' });
     }
-    const query = { _id: docId, userId };
+    const query = { _id: docId, userId: ObjectID(userId) };
     try {
       document = await DBClient.ccc(query, update, { returnOriginal: false });
       if (!document.value) throw new Error('Not found');
@@ -175,7 +175,7 @@ class FilesController {
     } catch (e) {
       return res.status(404).json({ error: 'Not found' });
     }
-    const query = { _id: docId, userId };
+    const query = { _id: docId, userId: ObjectID(userId) };
     try {
       document = await DBClient.ccc(query, update, { returnOriginal: false });
       if (!document.value) throw new Error('Not found');
