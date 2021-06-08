@@ -2,6 +2,7 @@ import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
+import { formatResponseOutput } from '../utils/helper';
 
 const { ObjectID } = require('mongodb');
 
@@ -156,7 +157,7 @@ class FilesController {
     } catch (e) {
       return res.status(404).json({ error: 'Not found' });
     }
-    return res.status(200).json(document.value);
+    return res.status(200).json(formatResponseOutput(document.value));
   }
 
   static async putUnpublish(req, res) {
@@ -181,7 +182,7 @@ class FilesController {
     } catch (e) {
       return res.status(404).json({ error: e.message });
     }
-    return res.status(200).json(document.value);
+    return res.status(200).json(formatResponseOutput(document.value));
   }
 }
 
