@@ -195,13 +195,13 @@ class FilesController {
       return res.status(404).json({ error: e.message });
     }
     if (document.type === 'folder') return res.status(400).json({ error: "A folder doesn't have content" });
-    if (!checkPathExist(document.localPath)) throw new Error('Not found');
+    if (!checkPathExist(document.localPath)) return res.status(404).json({ error: 'Not found' });
 
     const type = checkMimeType(document.name);
     const data = fs.readFileSync(document.localPath, 'utf8');
     return res.format({
       [type]() {
-        res.status(200).send(data);
+        res.send(data);
       },
     });
   }
