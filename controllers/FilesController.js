@@ -92,24 +92,14 @@ class FilesController {
     const { page } = req.query;
     /* no-unused-expressions */
     if (typeof parentId === 'undefined') {
-      parentId = 0;
+      parentId = '0';
     }
-    /* START AUTHENTICATION    */
-    const token = req.headers['x-token'];
-    const userId = await Auth.getUserByToken(token);
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    /* End checking authentiction */
-    const user = await DBClient.getUserById(userId);
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    /*  get all files for the authenticated user  */
+
     let allFiles;
     try {
       allFiles = await DBClient.getAllFilesBasedParentId(parentId);
     } catch (e) {
+      console.log(e.message);
       return res.status(201).json([]);
     }
 
@@ -122,6 +112,7 @@ class FilesController {
     const cursor = await allFiles.sort()
       .skip(page > 0 ? ((page + 1) * contentPerPage) : 0)
       .limit(contentPerPage);
+
     await cursor.forEach((document) => {
       dataList.push(document);
     });
