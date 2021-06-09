@@ -107,16 +107,14 @@ class FilesController {
       return res.status(201).json([]);
     }
     const contentPerPage = 20;
-    const dataList = [];
+    const x = await DBClient.db.collection('files');
+    const folderArray = await x.aggregate([
+      { $match: { parentId: parentId === '0' ? 0 : ObjectID(parentId) } },
+      { $skip: page * 20 },
+      { $limit: contentPerPage },
+    ]).toArray();
 
-    const cursor = await allFiles.sort()
-      .skip(page > 0 ? ((page + 1) * contentPerPage) : 0)
-      .limit(contentPerPage);
-
-    await cursor.forEach((document) => {
-      dataList.push(document);
-    });
-    const responseL = dataList.map((file) => ({
+    const responseL = await folderArray.map((file) => ({
       id: file._id,
       userId: file.userId,
       name: file.name,
@@ -124,6 +122,7 @@ class FilesController {
       isPublic: file.isPublic,
       parentId: file.parentId,
     }));
+    console.log('passe fro mhere');
     return res.status(201).json(responseL);
   }
 
