@@ -83,7 +83,9 @@ class FilesController {
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
-    return res.json(file);
+    const { _id } = file;
+    delete file._id;
+    return res.json({ ...file, id: _id });
   }
 
   static async getIndex(req, res) {
@@ -109,7 +111,7 @@ class FilesController {
     const x = await DBClient.db.collection('files');
     const folderArray = await x.aggregate([
       { $match: { parentId: parentId === '0' ? 0 : ObjectID(parentId) } },
-      { $skip: page * 20 },
+      { $skip: page * contentPerPage },
       { $limit: contentPerPage },
     ]).toArray();
 
