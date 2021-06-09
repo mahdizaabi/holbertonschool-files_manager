@@ -198,6 +198,7 @@ class FilesController {
     if (!checkPathExist(document.localPath)) return res.status(404).json({ error: 'Not found' });
 
     const type = checkMimeType(document.name);
+    console.log(type);
     const data = fs.readFileSync(document.localPath, 'utf8');
     return res.format({
       [type]() {
