@@ -83,6 +83,9 @@ class FilesController {
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
+    if (file.type === 'folder' && file.userId.toString() !== userId.toString()) {
+      return res.status(404).json({ error: 'Not found' });
+    }
     const { _id } = file;
     delete file._id;
     return res.json({ ...file, id: _id });
