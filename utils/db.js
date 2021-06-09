@@ -74,10 +74,9 @@ class DBClient {
   }
 
   async getAllFilesBasedParentId(parentId) {
-    if (parentId === 0) {
-      return this.db.collection('files').find({ parentId });
+    if (parentId === '0') {
+      return this.db.collection('files').find({ parentId: 0 });
     }
-
     return this.db.collection('files').find({ parentId: ObjectID(parentId) });
   }
 }
