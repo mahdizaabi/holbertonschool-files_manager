@@ -83,7 +83,7 @@ class FilesController {
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
-    return res.status(201).json(file);
+    return res.json(file);
   }
 
   static async getIndex(req, res) {
@@ -99,12 +99,11 @@ class FilesController {
     try {
       allFiles = await DBClient.getAllFilesBasedParentId(parentId);
     } catch (e) {
-      console.log(e.message);
-      return res.status(201).json([]);
+      return res.json([]);
     }
 
     if (await allFiles.count() === 0) {
-      return res.status(201).json([]);
+      return res.json([]);
     }
     const contentPerPage = 20;
     const x = await DBClient.db.collection('files');
@@ -122,8 +121,7 @@ class FilesController {
       isPublic: file.isPublic,
       parentId: file.parentId,
     }));
-    console.log('passe fro mhere');
-    return res.status(201).json(responseL);
+    return res.json(responseL);
   }
 
   static async putPublish(req, res) {
