@@ -1,5 +1,6 @@
 import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
+
 import FileModel from '../models/fileModel';
 import localStorage from '../utils/localStorage';
 import { checkMimeType, checkPathExist, formatResponseOutput } from '../utils/helper';
@@ -86,9 +87,7 @@ class FilesController {
     if (file.type === 'folder' && file.userId.toString() !== userId.toString()) {
       return res.status(404).json({ error: 'Not found' });
     }
-    const { _id } = file;
-    delete file._id;
-    return res.json({ ...file, id: _id });
+    return formatResponseOutput(file);
   }
 
   static async getIndex(req, res) {
@@ -180,20 +179,24 @@ class FilesController {
     return res.status(200).json(formatResponseOutput(document.value));
   }
 
+  /* GET FILE    */
+
   static async getFile(req, res) {
     const { id } = req.params;
-    const { userId } = req;
+    const { userId, authStatus } = req;
     let document;
 
     try {
-      document = await FileModel.isLinkedToUser(id, userId);
+      document = await DBClient.getDocumentById(id);
+
       if (!document) throw new Error('Not found');
-      if (!document.isPublic) throw new Error('Not found');
-      if (!checkPathExist(document.localPath)) throw new Error('Not found');
+      if ((!document.isPublic && authStatus === false) || (!document.isPublic && (document.userId.toString() !== userId.toString()))) throw new Error('Not found');
     } catch (e) {
       return res.status(404).json({ error: e.message });
     }
-    if (document.type === 'folder') return res.status(404).json({ error: "A folder doesn't have content" });
+    if (document.type === 'folder') return res.status(400).json({ error: "A folder doesn't have content" });
+    if (!checkPathExist(document.localPath)) throw new Error('Not found');
+
     const type = checkMimeType(document.name);
     const data = fs.readFileSync(document.localPath, 'utf8');
     return res.format({
