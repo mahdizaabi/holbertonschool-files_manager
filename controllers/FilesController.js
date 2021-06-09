@@ -93,10 +93,13 @@ class FilesController {
   static async getIndex(req, res) {
     /*  parse Query parameters(URL string) and Get parentId */
     let { parentId } = req.query;
-    const { page } = req.query;
+    let { page } = req.query;
     /* no-unused-expressions */
     if (typeof parentId === 'undefined') {
       parentId = '0';
+    }
+    if (typeof page === 'undefined') {
+      page = 0;
     }
 
     let allFiles;
@@ -198,7 +201,6 @@ class FilesController {
     if (!checkPathExist(document.localPath)) return res.status(404).json({ error: 'Not found' });
 
     const type = checkMimeType(document.name);
-    console.log(type);
     const data = fs.readFileSync(document.localPath, 'utf8');
     return res.format({
       [type]() {
