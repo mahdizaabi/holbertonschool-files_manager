@@ -87,7 +87,7 @@ class FilesController {
     if (file.type === 'folder' && file.userId.toString() !== userId.toString()) {
       return res.status(404).json({ error: 'Not found' });
     }
-    return formatResponseOutput(file);
+    return res.json(formatResponseOutput(file));
   }
 
   static async getIndex(req, res) {
