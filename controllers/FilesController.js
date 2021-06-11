@@ -1,3 +1,4 @@
+import Bull from 'bull';
 import DBClient from '../utils/db';
 import Auth from '../utils/Auth';
 
@@ -67,6 +68,12 @@ class FilesController {
 
     /* -save to databas */
     const newfile = await fileModelInstance.addOneToDatabase(localPath);
+    /*  EnQueue a new Job after storing an image    */
+    if (type === 'image') {
+      const imageThumbnailsQueue = new Bull('imageThumbnailsQueue');
+      await imageThumbnailsQueue.add({ userId, fileId: newfile._id.toString() });
+    }
+
     const { _id } = newfile;
     delete newfile._id;
     return res.status(201).json({ ...newfile, id: _id });
@@ -187,6 +194,8 @@ class FilesController {
   static async getFile(req, res) {
     const { id } = req.params;
     const { userId, authStatus } = req;
+    const { size } = req.query;
+
     let document;
 
     try {
@@ -200,11 +209,32 @@ class FilesController {
     if (document.type === 'folder') return res.status(400).json({ error: "A folder doesn't have content" });
     if (!checkPathExist(document.localPath)) return res.status(404).json({ error: 'Not found' });
 
-    const type = checkMimeType(document.name);
-    const data = fs.readFileSync(document.localPath, 'utf8');
+    let type;
+    let path;
+    let data;
+    let clearData;
+    if (document.type === 'image' && size) {
+      type = 'image/png';
+      path = `${document.localPath}_${size}`;
+    } else {
+      type = checkMimeType(document.name);
+      path = document.localPath;
+    }
+    try {
+      data = fs.readFileSync(path);
+    } catch (e) {
+      res.status(404).json({ error: 'Not found' });
+    }
+    console.log(data);
+    try {
+      clearData = Buffer.from(data, 'base64');
+    } catch (e) {
+      res.status(404).json({ error: e.message });
+    }
     return res.format({
+      // eslint-disable-next-line func-names
       [type]() {
-        res.send(data);
+        res.send(clearData);
       },
     });
   }
