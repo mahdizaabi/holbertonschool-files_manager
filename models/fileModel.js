@@ -102,7 +102,6 @@ class FileModel {
         parentId: this.parentId,
       });
     }
-
     return newEntity.ops[0];
   }
 
