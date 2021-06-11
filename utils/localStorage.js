@@ -5,7 +5,7 @@ const fs = require('fs');
 const localStorage = (data) => {
   const folder = process.env.FOLDER_PATH || '/tmp/files_manager';
   const storagePath = `${folder}/${uuidv4()}`;
-  const clearData = Buffer.from(data, 'base64').toString('utf-8');
+  const clearData = Buffer.from(data, 'base64').toString('base64');
 
   try {
     if (!fs.existsSync(folder)) {

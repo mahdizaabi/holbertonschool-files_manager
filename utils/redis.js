@@ -9,6 +9,7 @@ class RedisClient {
     this.client.on('error', (error) => {
       console.log(error);
     });
+
   }
 
   isAlive() {
